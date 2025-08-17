@@ -27,7 +27,7 @@ A Streamlit-based application for querying PDF documents using a Retrieval-Augme
 ## 🎯 Features
 
 * **PDF Ingestion**: Upload one or multiple PDF files and automatically split them into overlapping text chunks.
-* **Vector Embeddings**: Generate dense vector representations using `FastEmbedEmbeddings` with the `answerdotai/answerai-colbert-small-v1` model fileciteturn1file0.
+* **Vector Embeddings**: Generate dense vector representations using `FastEmbedEmbeddings` with the `answerdotai/answerai-colbert-small-v1` model.
 * **Free Vector Store**: Persist embeddings and chunks in a local Chroma index.
 * **Retrieval & Reranking**: Retrieve top-K relevant chunks via similarity search and rerank them with an LLM-based scoring prompt.
 * **Conversational QA**: Leverage a local Ollama LLM (`ChatOllama`) for answer generation from the highest-quality context.
