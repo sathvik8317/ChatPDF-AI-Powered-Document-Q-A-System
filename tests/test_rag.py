@@ -12,7 +12,7 @@ def test_parse_score(reply, expected):
 
 
 def test_ask_before_ingest(make_rag):
-    assert "upload" in make_rag([]).ask("anything").lower()
+    assert "upload" in make_rag([]).ask("anything").text.lower()
 
 
 def test_multiple_pdfs_are_all_searchable(make_rag, pdfs):
@@ -27,7 +27,7 @@ def test_ask_returns_model_answer(make_rag, pdfs):
     r = make_rag(["Queen Maris"])
     for path in pdfs:
         r.ingest(path)
-    assert r.ask("Who founded Coralport?") == "Queen Maris"
+    assert r.ask("Who founded Coralport?").text == "Queen Maris"
 
 
 def test_cross_encoder_puts_relevant_chunk_first(make_rag, pdfs):
@@ -61,3 +61,13 @@ def test_clear_drops_old_documents(make_rag, pdfs):
     r.ingest(zebras)
     sources = {d.metadata["source"] for d in r.vector_store.similarity_search("x", k=10)}
     assert sources == {zebras}
+
+
+def test_answer_cites_file_name_and_page(make_rag, pdfs):
+    atlantis, _ = pdfs
+    r = make_rag(["Queen Maris"])
+    r.ingest(atlantis, file_name="Atlantis Guide.pdf")
+    top = r.ask("Who founded Coralport?").sources[0]
+    assert top.file_name == "Atlantis Guide.pdf"
+    assert top.page == 2
+    assert "1312" in top.text

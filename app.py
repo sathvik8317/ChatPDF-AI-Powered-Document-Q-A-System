@@ -23,7 +23,12 @@ def process_input():
     ):
         user_text = st.session_state["user_input"].strip()
         with st.session_state["thinking_spinner"], st.spinner("Thinking"):
-            agent_text = st.session_state["assistant"].ask(user_text)
+            answer = st.session_state["assistant"].ask(user_text)
+
+        agent_text = answer.text
+        if answer.sources:
+            cited = sorted({f"{s.file_name} p.{s.page}" for s in answer.sources})
+            agent_text += "\n\nSources: " + ", ".join(cited)
 
         st.session_state["messages"].append((user_text, True))
         st.session_state["messages"].append((agent_text, False))
@@ -43,7 +48,7 @@ def read_and_save_file():
             f"Ingesting {file.name}"
         ):
             t0 = time.time()
-            st.session_state["assistant"].ingest(file_path)
+            st.session_state["assistant"].ingest(file_path, file_name=file.name)
             t1 = time.time()
 
         st.session_state["messages"].append(

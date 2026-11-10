@@ -3,6 +3,7 @@
 import os
 import re
 import uuid
+from dataclasses import dataclass, field
 
 from fastembed.rerank.cross_encoder import TextCrossEncoder
 from langchain_community.vectorstores import Chroma
@@ -26,6 +27,30 @@ RERANKERS = ("cross-encoder", "llm", "none")
 
 RETRIEVE_K = 20
 TOP_N = 5
+
+
+@dataclass
+class Source:
+    file_name: str
+    page: int  # 1-based
+    text: str
+    score: float
+
+
+@dataclass
+class Answer:
+    text: str
+    sources: list = field(default_factory=list)
+
+
+def to_source(score, doc) -> Source:
+    meta = doc.metadata
+    return Source(
+        file_name=meta.get("file_name") or os.path.basename(meta.get("source", "")),
+        page=int(meta.get("page", 0)) + 1,  # PyPDFLoader pages are 0-based
+        text=doc.page_content,
+        score=score,
+    )
 
 
 def parse_score(text: str) -> int:
@@ -76,8 +101,12 @@ class PDFRAG:
             self._cross_encoder = TextCrossEncoder(DEFAULT_RERANKER_MODEL)
         return self._cross_encoder
 
-    def ingest(self, pdf_path: str):
+    def ingest(self, pdf_path: str, file_name: str = None):
+        """Add a PDF to the store. `file_name` is what citations show (defaults to the path's name)."""
         docs = PyPDFLoader(file_path=pdf_path).load()
+        file_name = file_name or os.path.basename(pdf_path)
+        for doc in docs:
+            doc.metadata["file_name"] = file_name
         chunks = self.text_splitter.split_documents(docs)
         chunks = filter_complex_metadata(chunks)
         if not chunks:
@@ -117,13 +146,14 @@ class PDFRAG:
         docs = self.vector_store.similarity_search(query, k=RETRIEVE_K)
         return self.rerank(query, docs)[:TOP_N]
 
-    def ask(self, query: str):
+    def ask(self, query: str) -> Answer:
         if not self.vector_store:
-            return "Please upload and ingest a PDF document first."
+            return Answer("Please upload and ingest a PDF document first.")
 
         top = self.retrieve(query)
         context = "\n\n".join(doc.page_content for _, doc in top)
-        return self.answer_chain.invoke({"context": context, "question": query})
+        text = self.answer_chain.invoke({"context": context, "question": query})
+        return Answer(text, [to_source(score, doc) for score, doc in top])
 
     def clear(self):
         if self.vector_store is not None:
