@@ -29,14 +29,15 @@ def parse_score(text: str) -> int:
 
 
 class PDFRAG:
-    def __init__(self, llm_model=None, embedding_model=None):
+    def __init__(self, llm_model=None, embedding_model=None, llm=None):
         llm_model = llm_model or os.getenv("LLM_MODEL", DEFAULT_LLM_MODEL)
         embedding_model = embedding_model or os.getenv(
             "EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL
         )
 
         self.embedding = FastEmbedEmbeddings(model_name=embedding_model)
-        self.model = ChatOllama(model=llm_model)
+        # `llm` lets tests (or other backends) pass in any LangChain chat model.
+        self.model = llm or ChatOllama(model=llm_model)
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=200)
         self.vector_store = None
 
