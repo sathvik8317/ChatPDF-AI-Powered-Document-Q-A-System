@@ -101,6 +101,37 @@ def test_stream_yields_answer_and_sources(make_rag, pdfs):
     assert "Zebras" in answer.sources[0].text
 
 
+def test_keyword_search_finds_exact_terms(make_rag, pdfs):
+    r = make_rag([])
+    for path in pdfs:
+        r.ingest(path)
+    hits = r.keyword_search("founded 1312")
+    assert "1312" in hits[0].page_content
+    assert r.keyword_search("nonexistentword") == []
+
+
+def test_hybrid_search_merges_both_lists(make_rag, pdfs):
+    r = make_rag([], search="hybrid", reranker="none")
+    for path in pdfs:
+        r.ingest(path)
+    _, best = r.retrieve("Coralport 1312")[0]
+    assert "1312" in best.page_content
+
+
+def test_rrf_rewards_docs_ranked_high_in_both():
+    from langchain_core.documents import Document
+
+    a, b, c = (Document(page_content=t) for t in "abc")
+    assert [d.page_content for d in rag.reciprocal_rank_fusion([[a, b, c], [b, c, a]])][0] == "b"
+
+
+def test_clear_also_resets_keyword_index(make_rag, pdfs):
+    r = make_rag([], search="hybrid")
+    r.ingest(pdfs[0])
+    r.clear()
+    assert r.chunks == [] and r.keyword_search("Coralport") == []
+
+
 def test_history_keeps_only_recent_turns():
     history = [(f"q{i}", f"a{i}") for i in range(10)]
     text = rag.format_history(history)

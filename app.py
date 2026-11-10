@@ -5,7 +5,7 @@ import time
 
 import streamlit as st  # type: ignore
 
-from rag import DEFAULT_LLM_MODEL, RERANKERS, PDFRAG
+from rag import DEFAULT_LLM_MODEL, RERANKERS, SEARCH_MODES, PDFRAG
 
 st.set_page_config(page_title="ChatPDF", page_icon="📄")
 
@@ -85,6 +85,12 @@ def sidebar(assistant):
             RERANKERS,
             format_func=RERANKER_LABELS.get,
             help="Re-orders the 20 retrieved chunks before the best 5 go to the model.",
+        )
+        assistant.search = st.radio(
+            "Search",
+            SEARCH_MODES,
+            format_func={"vector": "Vector", "hybrid": "Hybrid (vector + BM25 keywords)"}.get,
+            help="Hybrid also matches exact words like model names or numbers.",
         )
         if st.button("Clear chat", width="stretch"):
             st.session_state["messages"] = []

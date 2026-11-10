@@ -6,6 +6,7 @@ import uuid
 from dataclasses import dataclass, field
 
 from fastembed.rerank.cross_encoder import TextCrossEncoder
+from rank_bm25 import BM25Okapi
 from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -24,6 +25,13 @@ DEFAULT_RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"
 #   llm:           the chat model rates each chunk 1-10, one call per chunk. Slow.
 #   none:          keep the vector search order.
 RERANKERS = ("cross-encoder", "llm", "none")
+
+# How the RETRIEVE_K candidate chunks are found before reranking:
+#   vector: embedding similarity only.
+#   hybrid: embedding similarity + BM25 keyword search, merged with reciprocal rank fusion.
+#           Helps with exact terms like "BLEU", "P100" or "warmup_steps".
+SEARCH_MODES = ("vector", "hybrid")
+RRF_K = 60  # standard reciprocal rank fusion constant
 
 RETRIEVE_K = 20
 TOP_N = 5
@@ -90,6 +98,26 @@ def to_source(score, doc) -> Source:
     )
 
 
+def tokenize(text):
+    """Lowercase words for BM25. Keeps decimals like 28.4 as one token."""
+    return re.findall(r"\w+(?:\.\d+)?", text.lower())
+
+
+def chunk_key(doc):
+    return (doc.metadata.get("file_name"), doc.metadata.get("page"), doc.page_content)
+
+
+def reciprocal_rank_fusion(rankings, k=RRF_K):
+    """Merge several best-first lists of docs into one best-first list."""
+    scores, docs = {}, {}
+    for ranking in rankings:
+        for rank, doc in enumerate(ranking):
+            key = chunk_key(doc)
+            scores[key] = scores.get(key, 0.0) + 1.0 / (k + rank + 1)
+            docs.setdefault(key, doc)
+    return [docs[key] for key in sorted(scores, key=scores.get, reverse=True)]
+
+
 def parse_score(text: str) -> int:
     """Pull the first integer out of the model's reply ("8", "8.", "Score: 8/10")."""
     match = re.search(r"\d+", text)
@@ -99,9 +127,15 @@ def parse_score(text: str) -> int:
 
 
 class PDFRAG:
-    def __init__(self, llm_model=None, embedding_model=None, llm=None, reranker="cross-encoder"):
+    def __init__(self, llm_model=None, embedding_model=None, llm=None,
+                 reranker="cross-encoder", search="vector"):
         if reranker not in RERANKERS:
             raise ValueError(f"reranker must be one of {RERANKERS}, got {reranker!r}")
+        if search not in SEARCH_MODES:
+            raise ValueError(f"search must be one of {SEARCH_MODES}, got {search!r}")
+        self.search = search
+        self.chunks = []  # every ingested chunk, for BM25
+        self._bm25 = None  # rebuilt lazily after ingest
         llm_model = llm_model or os.getenv("LLM_MODEL", DEFAULT_LLM_MODEL)
         embedding_model = embedding_model or os.getenv(
             "EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL
@@ -150,6 +184,8 @@ class PDFRAG:
         chunks = filter_complex_metadata(chunks)
         if not chunks:
             return
+        self.chunks.extend(chunks)
+        self._bm25 = None
 
         if self.vector_store is None:
             # In-memory store with a unique collection, so nothing piles up on disk
@@ -180,9 +216,21 @@ class PDFRAG:
         except Exception:
             return 0
 
+    def keyword_search(self, query, k=RETRIEVE_K):
+        """BM25 over every ingested chunk, best first."""
+        if not self.chunks:
+            return []
+        if self._bm25 is None:
+            self._bm25 = BM25Okapi([tokenize(c.page_content) for c in self.chunks])
+        scores = self._bm25.get_scores(tokenize(query))
+        best = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:k]
+        return [self.chunks[i] for i in best if scores[i] > 0]
+
     def retrieve(self, query):
         """Vector search for RETRIEVE_K chunks, rerank, keep the best TOP_N."""
         docs = self.vector_store.similarity_search(query, k=RETRIEVE_K)
+        if self.search == "hybrid":
+            docs = reciprocal_rank_fusion([docs, self.keyword_search(query)])[:RETRIEVE_K]
         return self.rerank(query, docs)[:TOP_N]
 
     def standalone_question(self, query, history=None):
@@ -219,3 +267,5 @@ class PDFRAG:
         if self.vector_store is not None:
             self.vector_store.delete_collection()
         self.vector_store = None
+        self.chunks = []
+        self._bm25 = None
