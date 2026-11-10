@@ -92,6 +92,15 @@ def test_follow_up_is_rewritten_and_searched(make_rag, pdfs):
     assert "Zebras" in answer.sources[0].text
 
 
+def test_stream_yields_answer_and_sources(make_rag, pdfs):
+    r = make_rag(["Standing up"])
+    for path in pdfs:
+        r.ingest(path)
+    answer, tokens = r.stream("How do zebras sleep?")
+    assert "".join(tokens) == "Standing up"
+    assert "Zebras" in answer.sources[0].text
+
+
 def test_history_keeps_only_recent_turns():
     history = [(f"q{i}", f"a{i}") for i in range(10)]
     text = rag.format_history(history)

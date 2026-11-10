@@ -29,6 +29,32 @@ RETRIEVE_K = 20
 TOP_N = 5
 HISTORY_TURNS = 3  # past question/answer pairs used to rewrite a follow-up
 
+NO_DOCUMENT_MESSAGE = "Please upload and ingest a PDF document first."
+
+
+# Prompt to score each chunk (llm reranker)
+SCORING_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", "Rate the passage for how useful it is for answering the question (1-10). Only output a single number."),
+    ("human", "Question: {question}\n\nPassage: {passage}")
+])
+
+# Final prompt to answer the question, grounded in the retrieved context
+ANSWER_PROMPT = ChatPromptTemplate.from_messages([
+    ("system",
+     "You answer questions about the user's documents. "
+     "Use only the context provided. If the context does not contain the answer, "
+     "reply: \"I couldn't find that in the document.\" Do not make up facts."),
+    ("human", "Context:\n{context}\n\nQuestion: {question}")
+])
+
+# Prompt to turn a follow-up ("what about page 2?") into a standalone question
+REWRITE_PROMPT = ChatPromptTemplate.from_messages([
+    ("system",
+     "Rewrite the user's follow-up question so it can be understood without the conversation. "
+     "Keep it short. If it is already standalone, return it unchanged. Output only the question."),
+    ("human", "Conversation:\n{history}\n\nFollow-up question: {question}")
+])
+
 
 @dataclass
 class Source:
@@ -89,31 +115,24 @@ class PDFRAG:
         self.vector_store = None
         self._cross_encoder = None  # loaded on first use
 
-        # Prompt to score each chunk (llm reranker)
-        self.scoring_prompt = ChatPromptTemplate.from_messages([
-            ("system", "Rate the passage for how useful it is for answering the question (1-10). Only output a single number."),
-            ("human", "Question: {question}\n\nPassage: {passage}")
-        ])
-        self.scoring_chain = self.scoring_prompt | self.model | StrOutputParser()
+    def use_model(self, llm_model):
+        """Switch the Ollama chat model (the sidebar setting)."""
+        self.model = ChatOllama(model=llm_model)
 
-        # Final prompt to answer the question, grounded in the retrieved context
-        self.final_prompt = ChatPromptTemplate.from_messages([
-            ("system",
-             "You answer questions about the user's documents. "
-             "Use only the context provided. If the context does not contain the answer, "
-             "say you could not find it in the document. Do not make up facts."),
-            ("human", "Context:\n{context}\n\nQuestion: {question}")
-        ])
-        self.answer_chain = self.final_prompt | self.model | StrOutputParser()
+    def _chain(self, prompt):
+        return prompt | self.model | StrOutputParser()
 
-        # Prompt to turn a follow-up ("what about page 2?") into a standalone question
-        self.rewrite_prompt = ChatPromptTemplate.from_messages([
-            ("system",
-             "Rewrite the user's follow-up question so it can be understood without the conversation. "
-             "Keep it short. If it is already standalone, return it unchanged. Output only the question."),
-            ("human", "Conversation:\n{history}\n\nFollow-up question: {question}")
-        ])
-        self.rewrite_chain = self.rewrite_prompt | self.model | StrOutputParser()
+    @property
+    def scoring_chain(self):
+        return self._chain(SCORING_PROMPT)
+
+    @property
+    def answer_chain(self):
+        return self._chain(ANSWER_PROMPT)
+
+    @property
+    def rewrite_chain(self):
+        return self._chain(REWRITE_PROMPT)
 
     @property
     def cross_encoder(self):
@@ -175,15 +194,26 @@ class PDFRAG:
         ).strip()
         return rewritten or query
 
-    def ask(self, query: str, history=None) -> Answer:
-        if not self.vector_store:
-            return Answer("Please upload and ingest a PDF document first.", question=query)
-
+    def _prepare(self, query, history):
+        """Rewrite the question, retrieve sources, and build the answer-prompt inputs."""
         question = self.standalone_question(query, history)
         top = self.retrieve(question)
         context = "\n\n".join(doc.page_content for _, doc in top)
-        text = self.answer_chain.invoke({"context": context, "question": question})
-        return Answer(text, [to_source(score, doc) for score, doc in top], question)
+        sources = [to_source(score, doc) for score, doc in top]
+        return question, sources, {"context": context, "question": question}
+
+    def ask(self, query: str, history=None) -> Answer:
+        if not self.vector_store:
+            return Answer(NO_DOCUMENT_MESSAGE, question=query)
+        question, sources, inputs = self._prepare(query, history)
+        return Answer(self.answer_chain.invoke(inputs), sources, question)
+
+    def stream(self, query: str, history=None):
+        """Like ask(), but returns (Answer without text, iterator of answer tokens)."""
+        if not self.vector_store:
+            return Answer("", question=query), iter([NO_DOCUMENT_MESSAGE])
+        question, sources, inputs = self._prepare(query, history)
+        return Answer("", sources, question), self.answer_chain.stream(inputs)
 
     def clear(self):
         if self.vector_store is not None:
