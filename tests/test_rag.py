@@ -24,11 +24,32 @@ def test_multiple_pdfs_are_all_searchable(make_rag, pdfs):
 
 
 def test_ask_returns_model_answer(make_rag, pdfs):
-    # 3 chunks get scored, then the final answer is generated.
-    r = make_rag(["9", "Score: 2", "5", "Queen Maris"])
+    r = make_rag(["Queen Maris"])
     for path in pdfs:
         r.ingest(path)
     assert r.ask("Who founded Coralport?") == "Queen Maris"
+
+
+def test_cross_encoder_puts_relevant_chunk_first(make_rag, pdfs):
+    r = make_rag([])
+    for path in pdfs:
+        r.ingest(path)
+    _, best = r.retrieve("How do zebras sleep?")[0]
+    assert "Zebras" in best.page_content
+
+
+def test_llm_reranker_orders_by_model_scores(make_rag, pdfs):
+    atlantis, _ = pdfs
+    r = make_rag(["Score: 2", "9"], reranker="llm")
+    r.ingest(atlantis)
+    scores = [s for s, _ in r.retrieve("Who founded Coralport?")]
+    assert scores == sorted(scores, reverse=True)
+    assert scores[0] == 9
+
+
+def test_unknown_reranker_is_rejected(make_rag):
+    with pytest.raises(ValueError):
+        make_rag([], reranker="magic")
 
 
 def test_clear_drops_old_documents(make_rag, pdfs):

@@ -4,6 +4,7 @@ import os
 import re
 import uuid
 
+from fastembed.rerank.cross_encoder import TextCrossEncoder
 from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -15,6 +16,13 @@ from langchain_community.vectorstores.utils import filter_complex_metadata
 
 DEFAULT_LLM_MODEL = "qwen2.5:7b"
 DEFAULT_EMBEDDING_MODEL = "BAAI/bge-small-en-v1.5"
+DEFAULT_RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"
+
+# How chunks are re-ordered after the vector search:
+#   cross-encoder: a small model scores every (question, chunk) pair at once. Fast.
+#   llm:           the chat model rates each chunk 1-10, one call per chunk. Slow.
+#   none:          keep the vector search order.
+RERANKERS = ("cross-encoder", "llm", "none")
 
 RETRIEVE_K = 20
 TOP_N = 5
@@ -29,19 +37,23 @@ def parse_score(text: str) -> int:
 
 
 class PDFRAG:
-    def __init__(self, llm_model=None, embedding_model=None, llm=None):
+    def __init__(self, llm_model=None, embedding_model=None, llm=None, reranker="cross-encoder"):
+        if reranker not in RERANKERS:
+            raise ValueError(f"reranker must be one of {RERANKERS}, got {reranker!r}")
         llm_model = llm_model or os.getenv("LLM_MODEL", DEFAULT_LLM_MODEL)
         embedding_model = embedding_model or os.getenv(
             "EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL
         )
 
+        self.reranker = reranker
         self.embedding = FastEmbedEmbeddings(model_name=embedding_model)
         # `llm` lets tests (or other backends) pass in any LangChain chat model.
         self.model = llm or ChatOllama(model=llm_model)
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=200)
         self.vector_store = None
+        self._cross_encoder = None  # loaded on first use
 
-        # Prompt to score each chunk
+        # Prompt to score each chunk (llm reranker)
         self.scoring_prompt = ChatPromptTemplate.from_messages([
             ("system", "Rate the passage for how useful it is for answering the question (1-10). Only output a single number."),
             ("human", "Question: {question}\n\nPassage: {passage}")
@@ -57,6 +69,12 @@ class PDFRAG:
             ("human", "Context:\n{context}\n\nQuestion: {question}")
         ])
         self.answer_chain = self.final_prompt | self.model | StrOutputParser()
+
+    @property
+    def cross_encoder(self):
+        if self._cross_encoder is None:
+            self._cross_encoder = TextCrossEncoder(DEFAULT_RERANKER_MODEL)
+        return self._cross_encoder
 
     def ingest(self, pdf_path: str):
         docs = PyPDFLoader(file_path=pdf_path).load()
@@ -77,32 +95,35 @@ class PDFRAG:
             # Further PDFs are added to the same store instead of replacing it.
             self.vector_store.add_documents(chunks)
 
+    def rerank(self, query, docs):
+        """Return (score, doc) pairs, best first."""
+        if self.reranker == "cross-encoder":
+            scores = self.cross_encoder.rerank(query, [d.page_content for d in docs])
+        elif self.reranker == "llm":
+            scores = [self._llm_score(query, d.page_content) for d in docs]
+        else:
+            scores = [-i for i in range(len(docs))]  # keep vector search order
+        ranked = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)
+        return [(float(s), d) for s, d in ranked]
+
+    def _llm_score(self, query, passage):
+        try:
+            return parse_score(self.scoring_chain.invoke({"question": query, "passage": passage}))
+        except Exception:
+            return 0
+
+    def retrieve(self, query):
+        """Vector search for RETRIEVE_K chunks, rerank, keep the best TOP_N."""
+        docs = self.vector_store.similarity_search(query, k=RETRIEVE_K)
+        return self.rerank(query, docs)[:TOP_N]
+
     def ask(self, query: str):
         if not self.vector_store:
             return "Please upload and ingest a PDF document first."
 
-        retriever = self.vector_store.as_retriever(
-            search_type="similarity", search_kwargs={"k": RETRIEVE_K}
-        )
-        docs = retriever.invoke(query)
-
-        # Re-rank documents using LLM scoring
-        scored_chunks = []
-        for doc in docs:
-            try:
-                reply = self.scoring_chain.invoke(
-                    {"question": query, "passage": doc.page_content}
-                )
-                score = parse_score(reply)
-            except Exception:
-                score = 0
-            scored_chunks.append((score, doc.page_content))
-
-        # Sort and select the highest scoring chunks
-        top_chunks = sorted(scored_chunks, key=lambda x: x[0], reverse=True)[:TOP_N]
-        refined_context = "\n\n".join(chunk for _, chunk in top_chunks)
-
-        return self.answer_chain.invoke({"context": refined_context, "question": query})
+        top = self.retrieve(query)
+        context = "\n\n".join(doc.page_content for _, doc in top)
+        return self.answer_chain.invoke({"context": context, "question": query})
 
     def clear(self):
         if self.vector_store is not None:
