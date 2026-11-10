@@ -1,0 +1,2000 @@
+{
+  "vector + cross-encoder": {
+    "search": "vector",
+    "reranker": "cross-encoder",
+    "summary": {
+      "hit_rate": 1.0,
+      "accuracy": 0.9565217391304348,
+      "seconds": 4.683478260869565
+    },
+    "rows": [
+      {
+        "question": "How many identical layers are in the Transformer encoder stack?",
+        "answer": "The encoder is composed of a stack of N = 6 identical layers.",
+        "pages": [
+          3,
+          3,
+          3,
+          5,
+          3
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.44
+      },
+      {
+        "question": "What is the model dimension d_model of the base Transformer?",
+        "answer": "The model dimension \\( d_{model} \\) of the base Transformer is 512.",
+        "pages": [
+          8,
+          8,
+          3,
+          8,
+          3
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 5.07
+      },
+      {
+        "question": "How many attention heads does the base model use?",
+        "answer": "The base model uses h = 8 parallel attention heads.",
+        "pages": [
+          5,
+          9,
+          5,
+          5,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.64
+      },
+      {
+        "question": "What are the key and value dimensions of each attention head?",
+        "answer": "According to the context, the key and value dimensions of each attention head are 64. Specifically, \"dk = dv = dmodel/h = 64\" is mentioned, where dk and dv refer to the attention key and value dimensions, respectively.",
+        "pages": [
+          9,
+          9,
+          4,
+          4,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 8.06
+      },
+      {
+        "question": "What is the inner-layer dimensionality of the position-wise feed-forward network?",
+        "answer": "The inner-layer dimensionality of the position-wise feed-forward network is 2048.",
+        "pages": [
+          5,
+          3,
+          5,
+          5,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.54
+      },
+      {
+        "question": "Which activation function is used inside the feed-forward network?",
+        "answer": "The feed-forward network uses a ReLU activation function between the two linear transformations.",
+        "pages": [
+          5,
+          3,
+          4,
+          5,
+          2
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.21
+      },
+      {
+        "question": "Which functions are used for the positional encodings?",
+        "answer": "The positional encodings use sine and cosine functions of different frequencies. Specifically, for a position pos and dimension i, the encoding is defined as:\nPE(pos,2i) = sin(pos/10000^(2i/dmodel))\nPE(pos,2i+1) = cos(pos/10000^(2i/dmodel))",
+        "pages": [
+          6,
+          6,
+          6,
+          6,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 14.24
+      },
+      {
+        "question": "What BLEU score did the big Transformer get on WMT 2014 English-to-German?",
+        "answer": "The big Transformer model achieved a BLEU score of 28.4 on the WMT 2014 English-to-German translation task.",
+        "pages": [
+          8,
+          8,
+          8,
+          1,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 6.11
+      },
+      {
+        "question": "What BLEU score did the base Transformer model get on English-to-German in Table 2?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          1
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 3.28
+      },
+      {
+        "question": "What single-model English-to-French BLEU score is reported in the abstract?",
+        "answer": "The single-model English-to-French BLEU score reported is 41.8.",
+        "pages": [
+          1,
+          8,
+          1,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.59
+      },
+      {
+        "question": "What GPUs were the models trained on?",
+        "answer": "The models were trained on 8 NVIDIA P100 GPUs.",
+        "pages": [
+          7,
+          8,
+          8,
+          7,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.38
+      },
+      {
+        "question": "How long were the base models trained for?",
+        "answer": "The base models were trained for a total of 100,000 steps or 12 hours.",
+        "pages": [
+          7,
+          7,
+          8,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.48
+      },
+      {
+        "question": "How long did training the big models take?",
+        "answer": "Training the big models took 3.5 days.",
+        "pages": [
+          7,
+          8,
+          7,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.77
+      },
+      {
+        "question": "Which optimizer was used for training?",
+        "answer": "The Adam optimizer was used for training.",
+        "pages": [
+          7,
+          7,
+          7,
+          8,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.33
+      },
+      {
+        "question": "How many warmup steps were used for the learning rate schedule?",
+        "answer": "warmup_steps = 4000.",
+        "pages": [
+          7,
+          7,
+          7,
+          7,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.53
+      },
+      {
+        "question": "What dropout rate was used for the base model?",
+        "answer": "The base model used a dropout rate of Pdrop = 0.1.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 5.09
+      },
+      {
+        "question": "What value of label smoothing was used during training?",
+        "answer": "The value of label smoothing used during training was ϵls = 0.1.",
+        "pages": [
+          8,
+          8,
+          7,
+          6,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.94
+      },
+      {
+        "question": "What beam size was used for machine translation?",
+        "answer": "The beam size used for machine translation was 4.",
+        "pages": [
+          8,
+          10,
+          10,
+          8,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.94
+      },
+      {
+        "question": "How many sentence pairs are in the WMT 2014 English-German training data?",
+        "answer": "The WMT 2014 English-German training data consists of about 4.5 million sentence pairs.",
+        "pages": [
+          7,
+          7,
+          7,
+          1,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 5.58
+      },
+      {
+        "question": "How large is the shared byte-pair vocabulary for English-German?",
+        "answer": "The shared byte-pair vocabulary for English-German is about 37000 tokens.",
+        "pages": [
+          7,
+          7,
+          7,
+          9,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.62
+      },
+      {
+        "question": "What F1 score did the semi-supervised Transformer get on WSJ section 23?",
+        "answer": "The semi-supervised Transformer (4 layers) got an F1 score of 92.7 on WSJ section 23.",
+        "pages": [
+          10,
+          10,
+          10,
+          9,
+          10
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 6.48
+      },
+      {
+        "question": "What accuracy did the model reach on ImageNet?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          8,
+          9,
+          10
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 3.31
+      },
+      {
+        "question": "How many parameters does GPT-3 have?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          1,
+          8,
+          7,
+          10,
+          2
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 3.09
+      }
+    ]
+  },
+  "vector + llm": {
+    "search": "vector",
+    "reranker": "llm",
+    "summary": {
+      "hit_rate": 1.0,
+      "accuracy": 0.8260869565217391,
+      "seconds": 16.662608695652175
+    },
+    "rows": [
+      {
+        "question": "How many identical layers are in the Transformer encoder stack?",
+        "answer": "The encoder is composed of a stack of N = 6 identical layers.",
+        "pages": [
+          3,
+          3,
+          3,
+          3,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 17.8
+      },
+      {
+        "question": "What is the model dimension d_model of the base Transformer?",
+        "answer": "The model dimension \\( d_{\\text{model}} \\) of the base Transformer is 512.",
+        "pages": [
+          3,
+          5,
+          5,
+          3,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 17.43
+      },
+      {
+        "question": "How many attention heads does the base model use?",
+        "answer": "The base model uses h = 8 attention heads.",
+        "pages": [
+          5,
+          5,
+          9,
+          9,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 15.47
+      },
+      {
+        "question": "What are the key and value dimensions of each attention head?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          4,
+          9,
+          9,
+          4,
+          5
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 14.94
+      },
+      {
+        "question": "What is the inner-layer dimensionality of the position-wise feed-forward network?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          5,
+          5,
+          3,
+          5,
+          6
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 14.69
+      },
+      {
+        "question": "Which activation function is used inside the feed-forward network?",
+        "answer": "The activation function used inside the feed-forward network is ReLU.",
+        "pages": [
+          5,
+          3,
+          2,
+          6,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 15.2
+      },
+      {
+        "question": "Which functions are used for the positional encodings?",
+        "answer": "The document states that sine and cosine functions are used for the positional encodings. Specifically, it mentions:\n\nP E(pos,2i) = sin(pos/100002i/dmodel)\nP E(pos,2i+1) = cos(pos/100002i/dmodel)",
+        "pages": [
+          6,
+          6,
+          6,
+          6,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 24.04
+      },
+      {
+        "question": "What BLEU score did the big Transformer get on WMT 2014 English-to-German?",
+        "answer": "The big Transformer model (Transformer (big)) achieved a BLEU score of 28.4 on the WMT 2014 English-to-German translation task.",
+        "pages": [
+          8,
+          1,
+          8,
+          1,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 19.5
+      },
+      {
+        "question": "What BLEU score did the base Transformer model get on English-to-German in Table 2?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          1,
+          8,
+          1
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 14.83
+      },
+      {
+        "question": "What single-model English-to-French BLEU score is reported in the abstract?",
+        "answer": "The single-model English-to-French BLEU score reported in the document is 41.8.",
+        "pages": [
+          1,
+          1,
+          8,
+          1,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 16.44
+      },
+      {
+        "question": "What GPUs were the models trained on?",
+        "answer": "The models were trained on NVIDIA P100 GPUs.",
+        "pages": [
+          7,
+          2,
+          7,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 14.68
+      },
+      {
+        "question": "How long were the base models trained for?",
+        "answer": "The base models were trained for a total of 100,000 steps or 12 hours.",
+        "pages": [
+          7,
+          8,
+          8,
+          9,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 16.38
+      },
+      {
+        "question": "How long did training the big models take?",
+        "answer": "Training the big models took 3.5 days.",
+        "pages": [
+          7,
+          8,
+          8,
+          7,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 15.26
+      },
+      {
+        "question": "Which optimizer was used for training?",
+        "answer": "The Adam optimizer was used for training.",
+        "pages": [
+          7,
+          7,
+          11,
+          7,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 14.81
+      },
+      {
+        "question": "How many warmup steps were used for the learning rate schedule?",
+        "answer": "warmup_steps = 4000.",
+        "pages": [
+          7,
+          7,
+          7,
+          7,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 15.56
+      },
+      {
+        "question": "What dropout rate was used for the base model?",
+        "answer": "The dropout rate used for the base model was Pdrop = 0.1.",
+        "pages": [
+          9,
+          8,
+          8,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 17.84
+      },
+      {
+        "question": "What value of label smoothing was used during training?",
+        "answer": "The value of label smoothing used during training was ϵls = 0.1.",
+        "pages": [
+          8,
+          8,
+          9,
+          8,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 16.88
+      },
+      {
+        "question": "What beam size was used for machine translation?",
+        "answer": "The beam size used for machine translation was 4. This can be seen from the context where it states, \"we used beam search with a beam size of 4 and length penalty α = 0.6 [38].\"",
+        "pages": [
+          10,
+          10,
+          8,
+          8,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 21.44
+      },
+      {
+        "question": "How many sentence pairs are in the WMT 2014 English-German training data?",
+        "answer": "The WMT 2014 English-German training data consists of about 4.5 million sentence pairs.",
+        "pages": [
+          7,
+          7,
+          7,
+          1,
+          10
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 17.05
+      },
+      {
+        "question": "How large is the shared byte-pair vocabulary for English-German?",
+        "answer": "The shared byte-pair encoding vocabulary for English-German is about 37000 tokens.",
+        "pages": [
+          7,
+          7,
+          7,
+          9,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 16.47
+      },
+      {
+        "question": "What F1 score did the semi-supervised Transformer get on WSJ section 23?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          10,
+          10,
+          9,
+          10,
+          9
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 15.82
+      },
+      {
+        "question": "What accuracy did the model reach on ImageNet?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          2,
+          10,
+          7
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 15.34
+      },
+      {
+        "question": "How many parameters does GPT-3 have?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          6
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 15.37
+      }
+    ]
+  },
+  "vector + none": {
+    "search": "vector",
+    "reranker": "none",
+    "summary": {
+      "hit_rate": 0.9523809523809523,
+      "accuracy": 0.9130434782608695,
+      "seconds": 3.243478260869565
+    },
+    "rows": [
+      {
+        "question": "How many identical layers are in the Transformer encoder stack?",
+        "answer": "The encoder is composed of a stack of N = 6 identical layers.",
+        "pages": [
+          3,
+          3,
+          3,
+          3,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.19
+      },
+      {
+        "question": "What is the model dimension d_model of the base Transformer?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          8,
+          1,
+          8
+        ],
+        "correct": false,
+        "hit": false,
+        "seconds": 2.69
+      },
+      {
+        "question": "How many attention heads does the base model use?",
+        "answer": "The base model uses 8 attention heads.",
+        "pages": [
+          5,
+          5,
+          9,
+          9,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 1.97
+      },
+      {
+        "question": "What are the key and value dimensions of each attention head?",
+        "answer": "The key and value dimensions (dk and dv) of each attention head are both 64, as stated in the context: \"For each of these we use dk = dv = dmodel/h = 64.\"",
+        "pages": [
+          5,
+          5,
+          9,
+          4,
+          3
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 7.0
+      },
+      {
+        "question": "What is the inner-layer dimensionality of the position-wise feed-forward network?",
+        "answer": "The inner-layer dimensionality of the position-wise feed-forward network is 2048.",
+        "pages": [
+          5,
+          3,
+          6,
+          5,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.27
+      },
+      {
+        "question": "Which activation function is used inside the feed-forward network?",
+        "answer": "The activation function used inside the feed-forward network is ReLU.",
+        "pages": [
+          5,
+          3,
+          2,
+          6,
+          2
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.31
+      },
+      {
+        "question": "Which functions are used for the positional encodings?",
+        "answer": "The positional encodings use sine and cosine functions of different frequencies. Specifically, for position pos and dimension i, the positional encoding is defined as:\nPE(pos,2i) = sin(pos/10000^(2i/dmodel))\nPE(pos,2i+1) = cos(pos/10000^(2i/dmodel))",
+        "pages": [
+          6,
+          6,
+          6,
+          6,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 10.67
+      },
+      {
+        "question": "What BLEU score did the big Transformer get on WMT 2014 English-to-German?",
+        "answer": "The big Transformer model achieved a BLEU score of 28.4 on the WMT 2014 English-to-German translation task.",
+        "pages": [
+          8,
+          8,
+          1,
+          8,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.33
+      },
+      {
+        "question": "What BLEU score did the base Transformer model get on English-to-German in Table 2?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          1,
+          8,
+          1
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 1.34
+      },
+      {
+        "question": "What single-model English-to-French BLEU score is reported in the abstract?",
+        "answer": "The single-model English-to-French BLEU score reported is 41.8.",
+        "pages": [
+          8,
+          1,
+          1,
+          8,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.92
+      },
+      {
+        "question": "What GPUs were the models trained on?",
+        "answer": "The models were trained on NVIDIA P100 GPUs.",
+        "pages": [
+          7,
+          8,
+          2,
+          2,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.1
+      },
+      {
+        "question": "How long were the base models trained for?",
+        "answer": "The base models were trained for a total of 100,000 steps or 12 hours.",
+        "pages": [
+          7,
+          7,
+          8,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.28
+      },
+      {
+        "question": "How long did training the big models take?",
+        "answer": "Training the big models took 3.5 days.",
+        "pages": [
+          7,
+          8,
+          7,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 1.99
+      },
+      {
+        "question": "Which optimizer was used for training?",
+        "answer": "The Adam optimizer was used for training.",
+        "pages": [
+          7,
+          7,
+          7,
+          7,
+          2
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 1.61
+      },
+      {
+        "question": "How many warmup steps were used for the learning rate schedule?",
+        "answer": "Warmup_steps = 4000.",
+        "pages": [
+          7,
+          7,
+          7,
+          7,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 1.66
+      },
+      {
+        "question": "What dropout rate was used for the base model?",
+        "answer": "The dropout rate used for the base model was Pdrop = 0.1.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.78
+      },
+      {
+        "question": "What value of label smoothing was used during training?",
+        "answer": "The value of label smoothing used during training was ϵls = 0.1.",
+        "pages": [
+          8,
+          8,
+          7,
+          7,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.82
+      },
+      {
+        "question": "What beam size was used for machine translation?",
+        "answer": "A beam size of 4 was used for machine translation with a length penalty α = 0.6. This was consistent across both base and big models.",
+        "pages": [
+          8,
+          8,
+          1,
+          10,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.4
+      },
+      {
+        "question": "How many sentence pairs are in the WMT 2014 English-German training data?",
+        "answer": "The WMT 2014 English-German training dataset consists of about 4.5 million sentence pairs.",
+        "pages": [
+          7,
+          7,
+          7,
+          1,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.59
+      },
+      {
+        "question": "How large is the shared byte-pair vocabulary for English-German?",
+        "answer": "The shared byte-pair vocabulary for English-German consists of about 37000 tokens.",
+        "pages": [
+          7,
+          7,
+          7,
+          1,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.04
+      },
+      {
+        "question": "What F1 score did the semi-supervised Transformer get on WSJ section 23?",
+        "answer": "The semi-supervised Transformer (4 layers) got an F1 score of 92.7 on WSJ section 23.",
+        "pages": [
+          10,
+          9,
+          10,
+          10,
+          10
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.6
+      },
+      {
+        "question": "What accuracy did the model reach on ImageNet?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 2.37
+      },
+      {
+        "question": "How many parameters does GPT-3 have?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 1.67
+      }
+    ]
+  },
+  "hybrid + cross-encoder": {
+    "search": "hybrid",
+    "reranker": "cross-encoder",
+    "summary": {
+      "hit_rate": 1.0,
+      "accuracy": 0.9565217391304348,
+      "seconds": 4.55304347826087
+    },
+    "rows": [
+      {
+        "question": "How many identical layers are in the Transformer encoder stack?",
+        "answer": "The Transformer encoder is composed of a stack of N = 6 identical layers.",
+        "pages": [
+          3,
+          3,
+          3,
+          3,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.91
+      },
+      {
+        "question": "What is the model dimension d_model of the base Transformer?",
+        "answer": "The model dimension \\( d_{\\text{model}} \\) of the base Transformer is 512.",
+        "pages": [
+          8,
+          8,
+          8,
+          3,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.97
+      },
+      {
+        "question": "How many attention heads does the base model use?",
+        "answer": "The base model uses h = 8 parallel attention heads.",
+        "pages": [
+          5,
+          9,
+          5,
+          5,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.19
+      },
+      {
+        "question": "What are the key and value dimensions of each attention head?",
+        "answer": "The key and value dimensions of each attention head are 64, as mentioned in the text: \"For each of these we use dk = dv = dmodel/h = 64.\"",
+        "pages": [
+          9,
+          9,
+          4,
+          4,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 8.65
+      },
+      {
+        "question": "What is the inner-layer dimensionality of the position-wise feed-forward network?",
+        "answer": "The inner-layer dimensionality of the position-wise feed-forward network is 2048.",
+        "pages": [
+          5,
+          3,
+          5,
+          3,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.92
+      },
+      {
+        "question": "Which activation function is used inside the feed-forward network?",
+        "answer": "The feed-forward network uses a ReLU activation function between the two linear transformations.",
+        "pages": [
+          5,
+          3,
+          4,
+          4,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.55
+      },
+      {
+        "question": "Which functions are used for the positional encodings?",
+        "answer": "The positional encodings are based on sine and cosine functions of different frequencies. Specifically, for each position pos and dimension i, the encoding is given by:\n- For even dimensions: \\( P E(pos,2i) = \\sin(pos/10000^{2i/d_{model}}) \\)\n- For odd dimensions: \\( P E(pos,2i+1) = \\cos(pos/10000^{2i/d_{model}}) \\)",
+        "pages": [
+          6,
+          6,
+          6,
+          6,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 13.82
+      },
+      {
+        "question": "What BLEU score did the big Transformer get on WMT 2014 English-to-German?",
+        "answer": "The big Transformer model achieved a BLEU score of 28.4 on the WMT 2014 English-to-German translation task.",
+        "pages": [
+          8,
+          8,
+          8,
+          1,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 5.3
+      },
+      {
+        "question": "What BLEU score did the base Transformer model get on English-to-German in Table 2?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          1
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 2.55
+      },
+      {
+        "question": "What single-model English-to-French BLEU score is reported in the abstract?",
+        "answer": "The single-model English-to-French BLEU score reported is 41.8.",
+        "pages": [
+          1,
+          8,
+          1,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.57
+      },
+      {
+        "question": "What GPUs were the models trained on?",
+        "answer": "The models were trained on 8 NVIDIA P100 GPUs.",
+        "pages": [
+          7,
+          8,
+          8,
+          7,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.8
+      },
+      {
+        "question": "How long were the base models trained for?",
+        "answer": "The base models were trained for a total of 100,000 steps or 12 hours.",
+        "pages": [
+          7,
+          7,
+          8,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 5.24
+      },
+      {
+        "question": "How long did training the big models take?",
+        "answer": "Training the big models took 3.5 days.",
+        "pages": [
+          7,
+          8,
+          7,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.19
+      },
+      {
+        "question": "Which optimizer was used for training?",
+        "answer": "The Adam optimizer was used for training.",
+        "pages": [
+          7,
+          7,
+          8,
+          7,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.18
+      },
+      {
+        "question": "How many warmup steps were used for the learning rate schedule?",
+        "answer": "warmup_steps = 4000.",
+        "pages": [
+          7,
+          7,
+          7,
+          7,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.05
+      },
+      {
+        "question": "What dropout rate was used for the base model?",
+        "answer": "The base model used a dropout rate of Pdrop = 0.1.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.16
+      },
+      {
+        "question": "What value of label smoothing was used during training?",
+        "answer": "The value of label smoothing used during training was ϵls = 0.1.",
+        "pages": [
+          8,
+          8,
+          7,
+          6,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.07
+      },
+      {
+        "question": "What beam size was used for machine translation?",
+        "answer": "A beam size of 4 was used for machine translation.",
+        "pages": [
+          8,
+          10,
+          10,
+          8,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.85
+      },
+      {
+        "question": "How many sentence pairs are in the WMT 2014 English-German training data?",
+        "answer": "The WMT 2014 English-German training data consists of about 4.5 million sentence pairs.",
+        "pages": [
+          7,
+          7,
+          7,
+          1,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.39
+      },
+      {
+        "question": "How large is the shared byte-pair vocabulary for English-German?",
+        "answer": "The shared byte-pair encoding vocabulary for English-German consists of about 37000 tokens.",
+        "pages": [
+          7,
+          7,
+          7,
+          9,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.15
+      },
+      {
+        "question": "What F1 score did the semi-supervised Transformer get on WSJ section 23?",
+        "answer": "The semi-supervised Transformer (4 layers) got an F1 score of 92.7 on WSJ section 23.",
+        "pages": [
+          10,
+          10,
+          10,
+          9,
+          10
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 6.05
+      },
+      {
+        "question": "What accuracy did the model reach on ImageNet?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          9,
+          2,
+          8
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 3.48
+      },
+      {
+        "question": "How many parameters does GPT-3 have?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          9,
+          8,
+          7,
+          10,
+          2
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 2.68
+      }
+    ]
+  },
+  "hybrid + llm": {
+    "search": "hybrid",
+    "reranker": "llm",
+    "summary": {
+      "hit_rate": 1.0,
+      "accuracy": 0.8695652173913043,
+      "seconds": 12.859130434782609
+    },
+    "rows": [
+      {
+        "question": "How many identical layers are in the Transformer encoder stack?",
+        "answer": "The encoder is composed of a stack of N = 6 identical layers.",
+        "pages": [
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 13.91
+      },
+      {
+        "question": "What is the model dimension d_model of the base Transformer?",
+        "answer": "The model dimension \\( d_{\\text{model}} \\) of the base Transformer is 512.",
+        "pages": [
+          3,
+          3,
+          5,
+          5,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 13.58
+      },
+      {
+        "question": "How many attention heads does the base model use?",
+        "answer": "The base model uses h = 8 attention heads.",
+        "pages": [
+          5,
+          5,
+          9,
+          15,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 10.81
+      },
+      {
+        "question": "What are the key and value dimensions of each attention head?",
+        "answer": "According to the context, for each attention head, the key and value dimensions are both 64, as stated in \"dk = dv = dmodel/h = 64.\"",
+        "pages": [
+          9,
+          4,
+          4,
+          4,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 13.79
+      },
+      {
+        "question": "What is the inner-layer dimensionality of the position-wise feed-forward network?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          5,
+          5,
+          3,
+          5,
+          5
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 10.51
+      },
+      {
+        "question": "Which activation function is used inside the feed-forward network?",
+        "answer": "The activation function used inside the feed-forward network is ReLU.",
+        "pages": [
+          5,
+          5,
+          3,
+          5,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 12.58
+      },
+      {
+        "question": "Which functions are used for the positional encodings?",
+        "answer": "The positional encodings use sine and cosine functions of different frequencies. Specifically, for a position \\( pos \\) and dimension \\( i \\), the positional encoding is defined as:\n\\[ P E(pos,2i) = \\sin\\left(\\frac{pos}{10000^{2i}/d_{model}}\\right) \\]\n\\[ P E(pos,2i+1) = \\cos\\left(\\frac{pos}{10000^{2i}/d_{model}}\\right) \\]",
+        "pages": [
+          6,
+          6,
+          6,
+          6,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 26.09
+      },
+      {
+        "question": "What BLEU score did the big Transformer get on WMT 2014 English-to-German?",
+        "answer": "The big Transformer model achieved a BLEU score of 28.4 on the WMT 2014 English-to-German translation task.",
+        "pages": [
+          8,
+          1,
+          8,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 13.81
+      },
+      {
+        "question": "What BLEU score did the base Transformer model get on English-to-German in Table 2?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          1,
+          1,
+          8
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 10.54
+      },
+      {
+        "question": "What single-model English-to-French BLEU score is reported in the abstract?",
+        "answer": "The single-model English-to-French BLEU score reported is 41.8.",
+        "pages": [
+          1,
+          8,
+          1,
+          1,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 11.82
+      },
+      {
+        "question": "What GPUs were the models trained on?",
+        "answer": "The models were trained on 8 NVIDIA P100 GPUs.",
+        "pages": [
+          7,
+          7,
+          8,
+          2,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 11.2
+      },
+      {
+        "question": "How long were the base models trained for?",
+        "answer": "The base models were trained for a total of 100,000 steps or 12 hours.",
+        "pages": [
+          7,
+          8,
+          8,
+          8,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 13.02
+      },
+      {
+        "question": "How long did training the big models take?",
+        "answer": "Training the big models took 3.5 days.",
+        "pages": [
+          7,
+          8,
+          8,
+          7,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 11.8
+      },
+      {
+        "question": "Which optimizer was used for training?",
+        "answer": "The Adam optimizer was used for training.",
+        "pages": [
+          7,
+          7,
+          7,
+          2,
+          2
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 10.91
+      },
+      {
+        "question": "How many warmup steps were used for the learning rate schedule?",
+        "answer": "warmup_steps = 4000.",
+        "pages": [
+          7,
+          7,
+          7,
+          7,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 11.22
+      },
+      {
+        "question": "What dropout rate was used for the base model?",
+        "answer": "The dropout rate used for the base model was Pdrop = 0.1.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 12.92
+      },
+      {
+        "question": "What value of label smoothing was used during training?",
+        "answer": "The value of label smoothing used during training was ϵls = 0.1.",
+        "pages": [
+          8,
+          8,
+          7,
+          8,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 12.66
+      },
+      {
+        "question": "What beam size was used for machine translation?",
+        "answer": "The beam size used for machine translation was 4 for the base models and 21 for the big models and in the semi-supervised setting.",
+        "pages": [
+          8,
+          10,
+          10,
+          8,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 14.05
+      },
+      {
+        "question": "How many sentence pairs are in the WMT 2014 English-German training data?",
+        "answer": "The WMT 2014 English-German training dataset consists of about 4.5 million sentence pairs.",
+        "pages": [
+          7,
+          7,
+          7,
+          1,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 12.73
+      },
+      {
+        "question": "How large is the shared byte-pair vocabulary for English-German?",
+        "answer": "The shared byte-pair vocabulary for English-German is about 37,000 tokens.",
+        "pages": [
+          7,
+          7,
+          7,
+          9,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 13.63
+      },
+      {
+        "question": "What F1 score did the semi-supervised Transformer get on WSJ section 23?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          10,
+          10,
+          10,
+          10,
+          9
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 10.73
+      },
+      {
+        "question": "What accuracy did the model reach on ImageNet?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          2,
+          1,
+          9
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 11.16
+      },
+      {
+        "question": "How many parameters does GPT-3 have?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          6,
+          6,
+          8,
+          9,
+          8
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 12.29
+      }
+    ]
+  },
+  "hybrid + none": {
+    "search": "hybrid",
+    "reranker": "none",
+    "summary": {
+      "hit_rate": 1.0,
+      "accuracy": 0.9565217391304348,
+      "seconds": 3.4613043478260868
+    },
+    "rows": [
+      {
+        "question": "How many identical layers are in the Transformer encoder stack?",
+        "answer": "The encoder is composed of a stack of N = 6 identical layers.",
+        "pages": [
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.08
+      },
+      {
+        "question": "What is the model dimension d_model of the base Transformer?",
+        "answer": "The model dimension \\( d_{\\text{model}} \\) of the base Transformer is 512.",
+        "pages": [
+          8,
+          8,
+          8,
+          6,
+          3
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.23
+      },
+      {
+        "question": "How many attention heads does the base model use?",
+        "answer": "The base model uses 8 attention heads.",
+        "pages": [
+          9,
+          15,
+          9,
+          5,
+          5
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.06
+      },
+      {
+        "question": "What are the key and value dimensions of each attention head?",
+        "answer": "The key and value dimensions of each attention head are dk = dv = dmodel/h = 64, as mentioned in the context provided.",
+        "pages": [
+          9,
+          4,
+          3,
+          5,
+          4
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.92
+      },
+      {
+        "question": "What is the inner-layer dimensionality of the position-wise feed-forward network?",
+        "answer": "The inner-layer dimensionality of the position-wise feed-forward network is 2048.",
+        "pages": [
+          3,
+          5,
+          5,
+          5,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.09
+      },
+      {
+        "question": "Which activation function is used inside the feed-forward network?",
+        "answer": "The activation function used inside the feed-forward network is ReLU.",
+        "pages": [
+          5,
+          3,
+          5,
+          6,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.35
+      },
+      {
+        "question": "Which functions are used for the positional encodings?",
+        "answer": "The positional encodings used in this work are sine and cosine functions of different frequencies. Specifically, for a position pos and dimension i, the positional encoding is given by:\n\\[ P E(pos,2i) = \\sin\\left(\\frac{pos}{10000^{2i/d_{\\text{model}}}\\right) \\]\n\\[ P E(pos,2i+1) = \\cos\\left(\\frac{pos}{10000^{2i/d_{\\text{model}}}\\right) \\]\nwhere \\( d_{\\text{model}} \\) is the dimension of the model, and pos is the position in the sequence.",
+        "pages": [
+          6,
+          6,
+          9,
+          6,
+          6
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 18.18
+      },
+      {
+        "question": "What BLEU score did the big Transformer get on WMT 2014 English-to-German?",
+        "answer": "The big Transformer model achieved a BLEU score of 28.4 on the WMT 2014 English-to-German translation task.",
+        "pages": [
+          8,
+          8,
+          1,
+          1,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.33
+      },
+      {
+        "question": "What BLEU score did the base Transformer model get on English-to-German in Table 2?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          1,
+          1,
+          8
+        ],
+        "correct": false,
+        "hit": true,
+        "seconds": 1.42
+      },
+      {
+        "question": "What single-model English-to-French BLEU score is reported in the abstract?",
+        "answer": "The single-model English-to-French BLEU score reported is 41.8.",
+        "pages": [
+          8,
+          8,
+          1,
+          1,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.0
+      },
+      {
+        "question": "What GPUs were the models trained on?",
+        "answer": "The models were trained on NVIDIA P100 GPUs.",
+        "pages": [
+          7,
+          2,
+          7,
+          2,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.2
+      },
+      {
+        "question": "How long were the base models trained for?",
+        "answer": "The base models were trained for a total of 100,000 steps or 12 hours.",
+        "pages": [
+          7,
+          7,
+          8,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 3.57
+      },
+      {
+        "question": "How long did training the big models take?",
+        "answer": "Training the big models took 3.5 days.",
+        "pages": [
+          7,
+          8,
+          8,
+          7,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.09
+      },
+      {
+        "question": "Which optimizer was used for training?",
+        "answer": "The Adam optimizer was used for training.",
+        "pages": [
+          7,
+          7,
+          7,
+          2,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 1.51
+      },
+      {
+        "question": "How many warmup steps were used for the learning rate schedule?",
+        "answer": "warmup_steps = 4000.",
+        "pages": [
+          7,
+          7,
+          7,
+          7,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.83
+      },
+      {
+        "question": "What dropout rate was used for the base model?",
+        "answer": "The dropout rate used for the base model was Pdrop = 0.1.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.83
+      },
+      {
+        "question": "What value of label smoothing was used during training?",
+        "answer": "The value of label smoothing used during training was ϵls = 0.1.",
+        "pages": [
+          8,
+          8,
+          7,
+          8,
+          8
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.68
+      },
+      {
+        "question": "What beam size was used for machine translation?",
+        "answer": "The beam size used for machine translation was 4.",
+        "pages": [
+          8,
+          8,
+          10,
+          10,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.19
+      },
+      {
+        "question": "How many sentence pairs are in the WMT 2014 English-German training data?",
+        "answer": "The WMT 2014 English-German training dataset consists of about 4.5 million sentence pairs.",
+        "pages": [
+          7,
+          7,
+          7,
+          1,
+          1
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.81
+      },
+      {
+        "question": "How large is the shared byte-pair vocabulary for English-German?",
+        "answer": "The shared byte-pair vocabulary for English-German is about 37000 tokens.",
+        "pages": [
+          7,
+          7,
+          7,
+          9,
+          7
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 2.85
+      },
+      {
+        "question": "What F1 score did the semi-supervised Transformer get on WSJ section 23?",
+        "answer": "The semi-supervised Transformer got an F1 score of 92.7 on WSJ section 23.",
+        "pages": [
+          10,
+          10,
+          10,
+          10,
+          9
+        ],
+        "correct": true,
+        "hit": true,
+        "seconds": 4.89
+      },
+      {
+        "question": "What accuracy did the model reach on ImageNet?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          8,
+          8,
+          8,
+          8,
+          2
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 2.08
+      },
+      {
+        "question": "How many parameters does GPT-3 have?",
+        "answer": "I couldn't find that in the document.",
+        "pages": [
+          6,
+          6,
+          8,
+          9,
+          8
+        ],
+        "correct": true,
+        "hit": null,
+        "seconds": 1.42
+      }
+    ]
+  }
+}
