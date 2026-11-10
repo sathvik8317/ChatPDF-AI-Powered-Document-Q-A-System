@@ -132,6 +132,60 @@ def test_clear_also_resets_keyword_index(make_rag, pdfs):
     assert r.chunks == [] and r.keyword_search("Coralport") == []
 
 
+TABLE_PAGE = "\n".join([
+    "Some prose before the table, with no numbers at all in it.",
+    "Table 2: BLEU scores on English-to-German and English-to-French.",
+    "Model",
+    "EN-DE EN-FR",
+    "ByteNet [18] 23.75",
+    "(A)",
+    "ConvS2S [9] 25.16 40.46",
+    "Transformer (base model) 27.3 38.1",
+    "Transformer (big) 28.4 41.8",
+    "Residual Dropout We apply dropout to the output of each sub-layer, before it is added.",
+])
+
+
+def test_split_tables_keeps_caption_and_header_with_rows():
+    prose, tables = rag.split_tables(TABLE_PAGE)
+    assert len(tables) == 1
+    table = tables[0]
+    assert table.startswith("Table 2:")
+    assert "EN-DE EN-FR" in table and "(A)" in table
+    assert "Transformer (base model) 27.3 38.1" in table
+    assert "27.3" not in prose
+    assert "Some prose" in prose and "Residual Dropout" in prose
+
+
+def test_split_tables_repeats_header_when_a_table_is_split():
+    rows = [f"Model {i} {i}.1 {i}.2 {i}.3" for i in range(200)]
+    _, tables = rag.split_tables("\n".join(["Table 9: Big one.", "Name A B C"] + rows))
+    assert len(tables) > 1
+    assert all(t.startswith("Table 9: Big one.\nName A B C") for t in tables)
+    assert all(len(t) <= rag.TABLE_CHUNK_CHARS for t in tables)
+
+
+def test_prose_with_a_few_numbers_is_not_a_table():
+    text = "\n".join([
+        "We trained the base models for a total of 100,000 steps or 12 hours.",
+        "The big models were trained for 300,000 steps (3.5 days).",
+        "We used the Adam optimizer with a warmup of 4000 steps in this setup here.",
+    ])
+    prose, tables = rag.split_tables(text)
+    assert tables == [] and prose == text
+
+
+def test_table_row_is_retrieved_with_its_header(make_rag, tmp_path):
+    from conftest import write_pdf
+
+    r = make_rag([])
+    r.ingest(write_pdf(tmp_path / "t.pdf", [TABLE_PAGE]))
+    tables = [c for c in r.chunks if c.metadata.get("table")]
+    assert len(tables) == 1
+    _, best = r.retrieve("What BLEU did the base model get on EN-DE in Table 2?")[0]
+    assert "27.3" in best.page_content and "EN-DE" in best.page_content
+
+
 def test_history_keeps_only_recent_turns():
     history = [(f"q{i}", f"a{i}") for i in range(10)]
     text = rag.format_history(history)

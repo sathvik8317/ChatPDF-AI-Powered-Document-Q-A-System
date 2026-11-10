@@ -10,14 +10,17 @@ import rag  # noqa: E402
 
 
 def write_pdf(path, pages):
-    """Write a minimal PDF with one line of text per page (no extra dependency)."""
+    """Write a minimal PDF, one string per page; newlines become separate lines (no extra dependency)."""
     objects = [b"<< /Type /Catalog /Pages 2 0 R >>", None]
     font_id = 3
     objects.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
     page_ids = []
     for text in pages:
-        safe = text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
-        stream = f"BT /F1 12 Tf 72 720 Td ({safe}) Tj ET".encode("latin-1")
+        shown = []
+        for line in text.split("\n"):
+            safe = line.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+            shown.append(f"({safe}) Tj")
+        stream = ("BT /F1 10 Tf 12 TL 40 760 Td " + " T* ".join(shown) + " ET").encode("latin-1")
         objects.append(b"<< /Length %d >>\nstream\n" % len(stream) + stream + b"\nendstream")
         content_id = len(objects)
         objects.append(

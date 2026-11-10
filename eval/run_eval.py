@@ -107,8 +107,11 @@ def main():
                              "summary": summarize(rows), "rows": rows}
             s = results[name]["summary"]
             print(f"   hit rate {s['hit_rate']:.0%}, accuracy {s['accuracy']:.0%}, {s['seconds']:.1f}s/question")
+            # save after every configuration, so a crash halfway keeps what finished
+            write_results(results, questions, getattr(assistant.model, "model", "?"), results_path)
 
-    model = getattr(assistant.model, "model", "?")
+
+def write_results(results, questions, model, results_path):
     answerable = sum(not q.get("unanswerable") for q in questions)
     lines = [
         f"Model `{model}`, {len(questions)} questions ({answerable} answerable, "

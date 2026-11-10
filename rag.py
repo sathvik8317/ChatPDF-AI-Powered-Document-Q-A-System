@@ -11,6 +11,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import FastEmbedEmbeddings
+from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama import ChatOllama
 from langchain_core.output_parsers import StrOutputParser
@@ -98,6 +99,79 @@ def to_source(score, doc) -> Source:
     )
 
 
+TABLE_MIN_ROWS = 3        # number-heavy lines in a row before it counts as a table
+TABLE_NUMERIC_RATIO = 0.25  # share of a line's words that contain a digit
+TABLE_MAX_GAP = 15        # short non-numeric lines like "(A)" may sit inside a table
+TABLE_CHUNK_CHARS = 1000  # tables get bigger chunks than prose
+CAPTION_RE = re.compile(r"^\s*Table\s+\d+[:.]", re.I)
+
+
+def is_table_row(line):
+    words = line.split()
+    numeric = sum(any(ch.isdigit() for ch in w) for w in words)
+    return numeric >= 2 and numeric / len(words) >= TABLE_NUMERIC_RATIO
+
+
+def split_tables(text):
+    """Split page text into (prose, tables).
+
+    A table is a run of number-heavy lines. Plain chunking cuts tables into pieces
+    that lose the caption and column headers ("Table 2 ... BLEU EN-DE EN-FR"), so a
+    row like "Transformer (base model) 27.3 38.1" can't be found or read. Here each
+    table becomes its own chunks, and every chunk repeats the caption and header.
+    """
+    lines = text.split("\n")
+    tables, used = [], set()
+    i = 0
+    while i < len(lines):
+        if not is_table_row(lines[i]):
+            i += 1
+            continue
+        # extend the run, allowing short label lines such as "(A)" in between
+        end, rows = i, 0
+        j = i
+        while j < len(lines):
+            if is_table_row(lines[j]):
+                rows, end = rows + 1, j
+            elif len(lines[j].strip()) >= TABLE_MAX_GAP:
+                break
+            j += 1
+        if rows < TABLE_MIN_ROWS:
+            i += 1
+            continue
+
+        # caption + header: back up to a "Table N:" line within 8 lines, else 2 lines of header
+        start = i
+        for k in range(i - 1, max(-1, i - 9), -1):
+            if k in used:
+                break
+            if CAPTION_RE.match(lines[k]):
+                start = k
+                break
+        else:
+            start = max(i - 2, 0)
+            while start in used:
+                start += 1
+        prefix = "\n".join(lines[start:i]).strip()
+        body = lines[i:end + 1]
+
+        # pack rows into chunks, each starting with the caption + header
+        chunk, size = [], len(prefix)
+        for row in body:
+            if chunk and size + len(row) + 1 > TABLE_CHUNK_CHARS:
+                tables.append("\n".join([prefix] + chunk).strip())
+                chunk, size = [], len(prefix)
+            chunk.append(row)
+            size += len(row) + 1
+        tables.append("\n".join([prefix] + chunk).strip())
+
+        used.update(range(start, end + 1))
+        i = end + 1
+
+    prose = "\n".join(line for n, line in enumerate(lines) if n not in used)
+    return prose, tables
+
+
 def tokenize(text):
     """Lowercase words for BM25. Keeps decimals like 28.4 as one token."""
     return re.findall(r"\w+(?:\.\d+)?", text.lower())
@@ -178,9 +252,15 @@ class PDFRAG:
         """Add a PDF to the store. `file_name` is what citations show (defaults to the path's name)."""
         docs = PyPDFLoader(file_path=pdf_path).load()
         file_name = file_name or os.path.basename(pdf_path)
+        chunks = []
         for doc in docs:
             doc.metadata["file_name"] = file_name
-        chunks = self.text_splitter.split_documents(docs)
+            prose, tables = split_tables(doc.page_content)
+            chunks += [Document(page_content=t, metadata={**doc.metadata, "table": True})
+                       for t in tables]
+            chunks += self.text_splitter.split_documents(
+                [Document(page_content=prose, metadata=doc.metadata)]
+            )
         chunks = filter_complex_metadata(chunks)
         if not chunks:
             return

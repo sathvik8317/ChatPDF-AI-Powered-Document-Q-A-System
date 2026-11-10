@@ -9,6 +9,7 @@ Upload PDFs, ask questions, get answers with the file and page they came from. E
 ## Features
 
 - **Multiple PDFs** in one session, searched together.
+- **Table-aware chunking**: tables stay in one chunk with their caption and column headers, so a row like `Transformer (base model) 27.3` can still be found and read.
 - **Citations**: every answer has a "Sources" dropdown with the file name, page number and the text it used.
 - **Follow-up questions**: "and what about the decoder?" is rewritten into a full question using the last 3 exchanges before searching.
 - **Grounded answers**: the model answers only from the retrieved text and says *"I couldn't find that in the document"* otherwise.
@@ -20,7 +21,7 @@ Upload PDFs, ask questions, get answers with the file and page they came from. E
 
 ```mermaid
 flowchart LR
-    PDF[PDF files] --> Split[Split into 400-char chunks]
+    PDF[PDF files] --> Split[Chunk: tables kept whole,<br/>prose in 400-char pieces]
     Split --> Embed[Embed with bge-small]
     Embed --> Chroma[(Chroma, in memory)]
     Split --> BM25[(BM25 index)]
@@ -34,7 +35,7 @@ flowchart LR
     LLM --> A[Answer + sources]
 ```
 
-1. **Ingest**: `PyPDFLoader` reads each page, `RecursiveCharacterTextSplitter` cuts it into 400-character chunks (200 overlap), and each chunk is tagged with its file name and page.
+1. **Ingest**: `PyPDFLoader` reads each page. Tables (runs of number-heavy lines) are pulled out first and kept whole, each chunk starting with the table's caption and column headers. The remaining prose goes through `RecursiveCharacterTextSplitter` (400 characters, 200 overlap). Every chunk is tagged with its file name and page.
 2. **Rewrite**: if there is chat history, the LLM turns the follow-up into a standalone question.
 3. **Search**: the 20 most similar chunks by embedding. In hybrid mode, BM25 keyword results are fused in with reciprocal rank fusion.
 4. **Rerank**: `ms-marco-MiniLM-L-6-v2` scores each (question, chunk) pair; the best 5 become the context.
@@ -50,19 +51,31 @@ flowchart LR
 
 | Search | Reranker | Retrieval hit rate | Answer accuracy | Seconds / question |
 |---|---|---|---|---|
-| vector | **cross-encoder** (default) | 100% | **96%** | 4.7 |
-| vector | LLM scoring | 100% | 83% | 16.7 |
-| vector | none | 95% | 91% | 3.2 |
-| hybrid | cross-encoder | 100% | 96% | 4.6 |
-| hybrid | LLM scoring | 100% | 87% | 12.9 |
-| hybrid | none | 100% | 96% | 3.5 |
+| vector | **cross-encoder** (default) | 100% | **100%** | 4.9 |
+| vector | LLM scoring | 100% | 96% | 16.7 |
+| vector | none | 100% | 100% | 3.9 |
+| hybrid | cross-encoder | 100% | 100% | 4.7 |
+| hybrid | LLM scoring | 100% | 100% | 12.9 |
+| hybrid | none | 100% | 96% | 3.9 |
+
+Before table-aware chunking, the same run looked like this:
+
+| Search | Reranker | Answer accuracy | Seconds / question |
+|---|---|---|---|
+| vector | cross-encoder | 96% | 4.7 |
+| vector | LLM scoring | 83% | 16.7 |
+| vector | none | 91% | 3.2 |
+| hybrid | cross-encoder | 96% | 4.6 |
+| hybrid | LLM scoring | 87% | 12.9 |
+| hybrid | none | 96% | 3.5 |
 
 What this shows:
 
-- **The cross-encoder beats LLM scoring on both speed and accuracy.** The original version of this app asked the LLM to rate all 20 chunks one by one. That was 3.5x slower and got 3 more questions wrong.
-- **Hybrid search fixes the weaker setups** (no reranker: 91% to 96%) but doesn't add anything on top of the cross-encoder here, so vector search stays the default and hybrid is a sidebar option.
-- **One question fails everywhere**: the base model's BLEU score (27.3) sits in Table 2, which PDF extraction turns into a run of numbers without row labels. That's a chunking problem, not a search problem.
-- 23 questions is a small set: one question is about 4 percentage points.
+- **Chunking mattered more than search or reranking.** One question failed in every configuration: the base model's BLEU score (27.3) in Table 2. The row text was extracted fine, but the 400-character splitter cut it away from the caption and column headers ("Table 2 … BLEU … EN-DE"), so the chunk ranked 12th and never reached the model. Keeping tables whole with their header moved it to 2nd and fixed it everywhere. It also fixed a Table 4 question under LLM reranking.
+- **The cross-encoder is the default because it's fast and never worse.** LLM scoring (what the original app did: the LLM rates all 20 chunks one by one) is 2.7–3.4x slower and no more accurate.
+- **Hybrid search** helped the setups without a good reranker before the chunking fix. After it, the differences are one question either way, so vector search stays the default and hybrid is a sidebar option.
+- **23 questions is small**: one question is about 4 percentage points, and with most configurations at 100% the set is now too easy to separate them. A bigger, harder set is the next thing to add.
+- **Known limit**: tables are detected as runs of number-heavy lines, so a table of formulas (Table 1 here: `O(n² · d)`) is not detected and is chunked like prose.
 
 Run it yourself (Ollama must be running):
 
