@@ -23,7 +23,10 @@ def process_input():
     ):
         user_text = st.session_state["user_input"].strip()
         with st.session_state["thinking_spinner"], st.spinner("Thinking"):
-            answer = st.session_state["assistant"].ask(user_text)
+            answer = st.session_state["assistant"].ask(
+                user_text, history=st.session_state["history"]
+            )
+        st.session_state["history"].append((user_text, answer.text))
 
         agent_text = answer.text
         if answer.sources:
@@ -37,6 +40,7 @@ def process_input():
 def read_and_save_file():
     st.session_state["assistant"].clear()
     st.session_state["messages"] = []
+    st.session_state["history"] = []
     st.session_state["user_input"] = ""
 
     for file in st.session_state["file_uploader"]:
@@ -63,6 +67,7 @@ def read_and_save_file():
 def page():
     if len(st.session_state) == 0:
         st.session_state["messages"] = []
+        st.session_state["history"] = []
         st.session_state["assistant"] = PDFRAG()
 
     st.header("ChatPDF")

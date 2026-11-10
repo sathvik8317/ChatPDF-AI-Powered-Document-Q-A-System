@@ -71,3 +71,29 @@ def test_answer_cites_file_name_and_page(make_rag, pdfs):
     assert top.file_name == "Atlantis Guide.pdf"
     assert top.page == 2
     assert "1312" in top.text
+
+
+def test_first_question_is_not_rewritten(make_rag, pdfs):
+    r = make_rag(["Queen Maris"])  # only one LLM call: the answer
+    r.ingest(pdfs[0])
+    answer = r.ask("Who founded Coralport?", history=[])
+    assert answer.question == "Who founded Coralport?"
+    assert answer.text == "Queen Maris"
+
+
+def test_follow_up_is_rewritten_and_searched(make_rag, pdfs):
+    r = make_rag(["How do zebras sleep?", "Standing up"])
+    for path in pdfs:
+        r.ingest(path)
+    history = [("Tell me about zebras", "They live in the savanna.")]
+    answer = r.ask("and how do they sleep?", history=history)
+    assert answer.question == "How do zebras sleep?"
+    assert answer.text == "Standing up"
+    assert "Zebras" in answer.sources[0].text
+
+
+def test_history_keeps_only_recent_turns():
+    history = [(f"q{i}", f"a{i}") for i in range(10)]
+    text = rag.format_history(history)
+    assert "q6" not in text
+    assert "q7" in text and "a9" in text

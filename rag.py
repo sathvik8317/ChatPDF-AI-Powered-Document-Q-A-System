@@ -27,6 +27,7 @@ RERANKERS = ("cross-encoder", "llm", "none")
 
 RETRIEVE_K = 20
 TOP_N = 5
+HISTORY_TURNS = 3  # past question/answer pairs used to rewrite a follow-up
 
 
 @dataclass
@@ -41,6 +42,16 @@ class Source:
 class Answer:
     text: str
     sources: list = field(default_factory=list)
+    question: str = ""  # the standalone question actually searched for
+
+
+def format_history(history):
+    """history: list of (question, answer) pairs, oldest first."""
+    lines = []
+    for question, answer in history[-HISTORY_TURNS:]:
+        lines.append(f"User: {question}")
+        lines.append(f"Assistant: {answer}")
+    return "\n".join(lines)
 
 
 def to_source(score, doc) -> Source:
@@ -95,6 +106,15 @@ class PDFRAG:
         ])
         self.answer_chain = self.final_prompt | self.model | StrOutputParser()
 
+        # Prompt to turn a follow-up ("what about page 2?") into a standalone question
+        self.rewrite_prompt = ChatPromptTemplate.from_messages([
+            ("system",
+             "Rewrite the user's follow-up question so it can be understood without the conversation. "
+             "Keep it short. If it is already standalone, return it unchanged. Output only the question."),
+            ("human", "Conversation:\n{history}\n\nFollow-up question: {question}")
+        ])
+        self.rewrite_chain = self.rewrite_prompt | self.model | StrOutputParser()
+
     @property
     def cross_encoder(self):
         if self._cross_encoder is None:
@@ -146,14 +166,24 @@ class PDFRAG:
         docs = self.vector_store.similarity_search(query, k=RETRIEVE_K)
         return self.rerank(query, docs)[:TOP_N]
 
-    def ask(self, query: str) -> Answer:
-        if not self.vector_store:
-            return Answer("Please upload and ingest a PDF document first.")
+    def standalone_question(self, query, history=None):
+        """Rewrite a follow-up using recent history. The first question is used as is."""
+        if not history:
+            return query
+        rewritten = self.rewrite_chain.invoke(
+            {"history": format_history(history), "question": query}
+        ).strip()
+        return rewritten or query
 
-        top = self.retrieve(query)
+    def ask(self, query: str, history=None) -> Answer:
+        if not self.vector_store:
+            return Answer("Please upload and ingest a PDF document first.", question=query)
+
+        question = self.standalone_question(query, history)
+        top = self.retrieve(question)
         context = "\n\n".join(doc.page_content for _, doc in top)
-        text = self.answer_chain.invoke({"context": context, "question": query})
-        return Answer(text, [to_source(score, doc) for score, doc in top])
+        text = self.answer_chain.invoke({"context": context, "question": question})
+        return Answer(text, [to_source(score, doc) for score, doc in top], question)
 
     def clear(self):
         if self.vector_store is not None:
