@@ -6,3 +6,4 @@ langchain-ollama
 chromadb
 fastembed
 pypdf
+langchain-text-splitters

@@ -1,10 +1,10 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 import os
 import time
 import tempfile
 import streamlit as st # type: ignore
 from streamlit_chat import message # type: ignore
-from rag import ChatPDFAlternative4_v2
+from rag import PDFRAG
 
 st.set_page_config(page_title="ChatPDF")
 
@@ -58,7 +58,7 @@ def read_and_save_file():
 def page():
     if len(st.session_state) == 0:
         st.session_state["messages"] = []
-        st.session_state["assistant"] = ChatPDFAlternative4_v2()
+        st.session_state["assistant"] = PDFRAG()
 
     st.header("ChatPDF")
 
